@@ -1,28 +1,38 @@
 import random
 import math
 
-jumlahPopulasi = 100
-panjangKromosom = 20
-pc = 0.70
+# ukuran populasi
+jumlahPopulasi = 6
+# ukuran kromosom
+panjangKromosom = 25
+# probabilitas crossover
+pc = 0.7
+# probabilitas mutasi
 pm = 0.4
+# generasi
 generasi = 50
 
 def fungsi(x,y):
+  # fungsi matematika yang digunakan pada kasus ini
   return ((math.cos(x) + math.sin(y))**2)/(x**2+y**2)
 
-def generatePopulasi(jumlahPopulasi):
-  populasi = []
-  for _ in range(jumlahPopulasi):
-    populasi.append(generateKromosom(panjangKromosom))
-  return populasi
 
 def generateKromosom(panjangKromosom):
+  # membuat kromosom (mengambil 0 dan 1 secara acak)
   result = []
   for _ in range(panjangKromosom):
     result.append(random.randint(0,1))
   return result
 
+def generatePopulasi(jumlahPopulasi):
+  # membentuk populasi dari kromosom
+  populasi = []
+  for _ in range(jumlahPopulasi):
+    populasi.append(generateKromosom(panjangKromosom))
+  return populasi
+
 def decodeKromosom(kromosom):
+  # menconvert kromosom menjadi angka/nilai
   xmin = -5
   xmax = 5
   ymin = -5
@@ -43,6 +53,7 @@ def decodeKromosom(kromosom):
   return [x,y]
   
 def fitness(populasi):
+  # mengitung total fitness setiap populasi
   total = []
   for i in populasi:
     x, y = decodeKromosom(i)
@@ -51,6 +62,7 @@ def fitness(populasi):
 
 
 def rouletteWheel(populasi, jumlahPopulasi, fitness):
+  # seleksi pemilihan orang tua dengan metode roulettewhell
   index = 0
   total = sum(fitness)
   # mengambil angka random dari 0 sampai 1
@@ -63,6 +75,7 @@ def rouletteWheel(populasi, jumlahPopulasi, fitness):
   return populasi[index]
 
 def crossover(pc, panjangKromosom, x, y):
+  # melakukan crossover dengan perbandingan bilangan random
   bilrandom = random.uniform(0, panjangKromosom-1)
   if bilrandom < pc:
     mv = random.randint(0,3)
@@ -73,6 +86,7 @@ def crossover(pc, panjangKromosom, x, y):
   return [x, y]
 
 def mutasi(panjangKromosom, pr, keturunan):
+  # melakukan mutasi keturunan
   bilrandom = random.uniform(0,1)
   for i in range(panjangKromosom):
     if bilrandom < pr:
@@ -81,6 +95,7 @@ def mutasi(panjangKromosom, pr, keturunan):
   return keturunan
 
 def elitisme(fitness):
+  # mencari 2 nilai minimum pada fitness
   min1 = 0
   min2 = 0
   for i in range(1, len(fitness)):
@@ -89,31 +104,50 @@ def elitisme(fitness):
       min1 = i
   return min1, min2
 
+# inisialisai populasi dan kromosom
 populasi = generatePopulasi(jumlahPopulasi)
 kromosom = generateKromosom(panjangKromosom)
 
+print("Populasi Awal: ", populasi)
+
+# perpindahan generasi untuk melakukan proses seleksi populasi
 for _ in range(generasi):
   newPopulasi = []
+  # mencari fitness terbaik untuk dibandingkan dengan generasi selanjutnya
   fit = fitness(populasi)
   parent1, parent2 = elitisme(fit)
+  # menambahkan populasi untuk melakukan seleksi generasi
   newPopulasi.append(populasi[parent1])
   newPopulasi.append(populasi[parent2])
   
   for _ in range((jumlahPopulasi-2)//2):
+    # mencari parent dengan metode roulettewhell
     parent1 = rouletteWheel(populasi, jumlahPopulasi, fit)
     parent2 = rouletteWheel(populasi, jumlahPopulasi, fit)
-    while(parent1 == parent2):
+
+    # jika parent bernilai sama, akan diacak ulang
+    if(parent1 == parent2):
       parent2 = rouletteWheel(populasi, jumlahPopulasi, fit)
 
-  keturunan = crossover(pc,panjangKromosom,parent1[:], parent2[:])
-  keturunan = mutasi(panjangKromosom, pm, keturunan)
-  newPopulasi.append(keturunan[0])
-  newPopulasi.append(keturunan[1])
+    # melakukan crossover dan mutasi
+    keturunan = crossover(pc,panjangKromosom,parent1[:], parent2[:])
+    keturunan = mutasi(panjangKromosom, pm, keturunan)
+    
+    # menambahkan keturunan pada populasi
+    newPopulasi.append(keturunan[0])
+    newPopulasi.append(keturunan[1])
 
+
+# assign populasi baru ke populasi
 populasi = newPopulasi
-
+# menghitung ulang fitness
 fit = fitness(populasi)
+# mencari index minimum pada fitness
 index = fit.index(min(fit))
-print(populasi[index])
-print(fit[index])
-print(decodeKromosom(populasi[index]))
+
+# hasil kromosom terbaik
+print("Kromosom Terbaik: ", populasi[index])
+# hasil fitness terbaik
+print("Fitness Terbaik: ", fit[index])
+# ngambil nilai kromosom pada populasi index minimum
+print("Nilai Kromosom: ", decodeKromosom(populasi[index]))
