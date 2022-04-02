@@ -2,19 +2,22 @@ import random
 import math
 
 # ukuran populasi
-jumlahPopulasi = 6
+jumlahPopulasi = 50
 # ukuran kromosom
-panjangKromosom = 25
+panjangKromosom = 100
 # probabilitas crossover
-pc = 0.7
+pc = 0.9
 # probabilitas mutasi
-pm = 0.4
+pm = 0.7
 # generasi
-generasi = 50
+generasi = 100
 
 def fungsi(x,y):
   # fungsi matematika yang digunakan pada kasus ini
   return ((math.cos(x) + math.sin(y))**2)/(x**2+y**2)
+
+def fungsiFitness(x,y):
+  return 1 / (0.01+((math.cos(x)+math.sin(y))**2) / (x**2 + y**2))
 
 
 def generateKromosom(panjangKromosom):
@@ -57,7 +60,7 @@ def fitness(populasi):
   total = []
   for i in populasi:
     x, y = decodeKromosom(i)
-    total.append(fungsi(x,y))
+    total.append(fungsiFitness(x,y))
   return total
 
 
@@ -95,20 +98,20 @@ def mutasi(panjangKromosom, pr, keturunan):
   return keturunan
 
 def elitisme(fitness):
-  # mencari 2 nilai minimum pada fitness
-  min1 = 0
-  min2 = 0
+  # mencari 2 nilai terbaik pada fitness
+  index1 = 0
+  index2 = 0
   for i in range(1, len(fitness)):
-    if fitness[i] < fitness[min1]:
-      min2 = min1
-      min1 = i
-  return min1, min2
+    if fitness[i] > fitness[index1]:
+      index2 = index1
+      index1 = i
+  return [index1, index2]
 
 # inisialisai populasi dan kromosom
 populasi = generatePopulasi(jumlahPopulasi)
 kromosom = generateKromosom(panjangKromosom)
 
-print("Populasi Awal: ", populasi)
+# print("Populasi Awal: ", populasi)
 
 # perpindahan generasi untuk melakukan proses seleksi populasi
 for _ in range(generasi):
@@ -142,8 +145,9 @@ for _ in range(generasi):
 populasi = newPopulasi
 # menghitung ulang fitness
 fit = fitness(populasi)
+print(fit)
 # mencari index minimum pada fitness
-index = fit.index(min(fit))
+index = fit.index(max(fit))
 
 # hasil kromosom terbaik
 print("Kromosom Terbaik: ", populasi[index])
