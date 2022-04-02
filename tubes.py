@@ -2,15 +2,15 @@ import random
 import math
 
 # ukuran populasi
-jumlahPopulasi = 50
+jumlahPopulasi = 6
 # ukuran kromosom
-panjangKromosom = 100
+panjangKromosom = 25
 # probabilitas crossover
-pc = 0.9
+pc = 0.7
 # probabilitas mutasi
-pm = 0.7
+pm = 0.4
 # generasi
-generasi = 100
+generasi = 50
 
 def fungsi(x,y):
   # fungsi matematika yang digunakan pada kasus ini
@@ -111,7 +111,7 @@ def elitisme(fitness):
 populasi = generatePopulasi(jumlahPopulasi)
 kromosom = generateKromosom(panjangKromosom)
 
-# print("Populasi Awal: ", populasi)
+print("Populasi Awal: ", populasi)
 
 # perpindahan generasi untuk melakukan proses seleksi populasi
 for _ in range(generasi):
@@ -145,7 +145,6 @@ for _ in range(generasi):
 populasi = newPopulasi
 # menghitung ulang fitness
 fit = fitness(populasi)
-print(fit)
 # mencari index minimum pada fitness
 index = fit.index(max(fit))
 
