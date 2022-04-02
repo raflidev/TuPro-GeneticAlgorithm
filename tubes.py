@@ -17,7 +17,7 @@ def fungsi(x,y):
   return ((math.cos(x) + math.sin(y))**2)/(x**2+y**2)
 
 def fungsiFitness(x,y):
-  return 1 / (0.01+((math.cos(x)+math.sin(y))**2) / (x**2 + y**2))
+  return 1 / (0.01+(fungsi(x,y)))
 
 
 def generateKromosom(panjangKromosom):
@@ -81,7 +81,7 @@ def crossover(pc, panjangKromosom, x, y):
   # melakukan crossover dengan perbandingan bilangan random
   bilrandom = random.uniform(0, panjangKromosom-1)
   if bilrandom < pc:
-    mv = random.randint(0,3)
+    mv = random.randint(0, panjangKromosom-1)
     for i in range(mv):
       temp = x[i]
       x[i] = y[i]
